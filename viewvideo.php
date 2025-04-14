@@ -14,21 +14,27 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// Validate and sanitize the video ID to prevent injection attacks
+$video_id = isset($_GET['id']) ? filter_var($_GET['id'], FILTER_VALIDATE_INT) : null;
+
+if (!$video_id) {
+    exit('Invalid video ID');
+}
+
 ?>
 
 <div class="topLeft">
     <?php
 
-
         $stmt = $mysqli->prepare("SELECT * FROM videos WHERE id = ?");
-        $stmt->bind_param("s", $_GET['id']);
+        $stmt->bind_param("i", $video_id);  // Using "i" for integers
         $stmt->execute();
         $result = $stmt->get_result();
         if($result->num_rows === 0) exit('No rows');
         while($row = $result->fetch_assoc()) {
             echo '
-            <h2>' . $row['videotitle'] . '</h2>
-            <iframe id="vid-player" style="border: 0px; overflow: hidden;" src="player/lolplayer.php?id=' . $_GET['id'] . '" height="360px" width="480px"></iframe> <br><br>
+            <h2>' . htmlspecialchars($row['videotitle'], ENT_QUOTES, 'UTF-8') . '</h2>
+            <iframe id="vid-player" style="border: 0px; overflow: hidden;" src="player/lolplayer.php?id=' . htmlspecialchars($video_id, ENT_QUOTES, 'UTF-8') . '" height="360px" width="480px"></iframe> <br><br>
                 <script>
                     var vid = document.getElementById(\'vid-player\').contentWindow.document.getElementById(\'video-stream\');
                     function hmsToSecondsOnly(str) {
@@ -43,54 +49,31 @@ error_reporting(E_ALL);
                         return s;
                     }
 
-
                     function setTimePlayer(seconds) {
                         var parsedSec = hmsToSecondsOnly(seconds);
                         document.getElementById(\'vid-player\').contentWindow.document.getElementById(\'video-stream\').currentTime = parsedSec;
                     }
                 </script>';
 
-            $videoembed = '\
-            <iframe id="vid-player" style="border: 0px; overflow: hidden;" src="player/lolplayer.php?id=' . $_GET['id'] . '" height="360px" width="480px"></iframe> <br><br>
-            <script>
-                var vid = document.getElementById(\'vid-player\').contentWindow.document.getElementById(\'video-stream\');
-                function hmsToSecondsOnly(str) {
-                    var p = str.split(\':\'),
-                        s = 0, m = 1;
-
-                    while (p.length > 0) {
-                        s += m * parseInt(p.pop(), 10);
-                        m *= 60;
-                    }
-
-                    return s;
-                }
-
-
-                function setTimePlayer(seconds) {
-                    var parsedSec = hmsToSecondsOnly(seconds);
-                    document.getElementById(\'vid-player\').contentWindow.document.getElementById(\'video-stream\').currentTime = parsedSec;
-                }
-            </script>';
             $videoid = $row['id'];
         }
-        ?>
+    ?>
 
 <div class="topRight" style="margin-left: 500px; margin-top: -336px;">
 <div class="card gray">
         <?php
             $stmt = $mysqli->prepare("SELECT * FROM videos WHERE id = ?");
-            $stmt->bind_param("s", $_GET['id']);
+            $stmt->bind_param("i", $video_id);  // Using "i" for integers
             $stmt->execute();
             $result = $stmt->get_result();
             if($result->num_rows === 0) exit('No rows');
             while($row = $result->fetch_assoc()) {
-                echo "Added: " . $row['date'] . "<br>";
-                echo "" . $row['views'] . " views<br>";
-                echo "" . $row['likes'] . " likes<br>";
-                echo "By: " . $row['author'] . "<br><br>";
-                echo "<br>'" . $row['description'] . "'<br>";
-                echo "<a href='likevideo.php?id=" . $row['id'] . "'>Like Video</a>";
+                echo "Added: " . htmlspecialchars($row['date'], ENT_QUOTES, 'UTF-8') . "<br>";
+                echo "" . htmlspecialchars($row['views'], ENT_QUOTES, 'UTF-8') . " views<br>";
+                echo "" . htmlspecialchars($row['likes'], ENT_QUOTES, 'UTF-8') . " likes<br>";
+                echo "By: " . htmlspecialchars($row['author'], ENT_QUOTES, 'UTF-8') . "<br><br>";
+                echo "<br>'" . htmlspecialchars($row['description'], ENT_QUOTES, 'UTF-8') . "'<br>";
+                echo "<a href='likevideo.php?id=" . htmlspecialchars($row['id'], ENT_QUOTES, 'UTF-8') . "'>Like Video</a>";
             }
 
         ?>  
@@ -99,15 +82,15 @@ error_reporting(E_ALL);
         <div class="card message">     
         <?php
             $stmt = $mysqli->prepare("SELECT * FROM videos WHERE id = ?");
-            $stmt->bind_param("s", $_GET['id']);
+            $stmt->bind_param("i", $video_id);  // Using "i" for integers
             $stmt->execute();
             $result = $stmt->get_result();
             if($result->num_rows === 0) exit('No rows');
             while($row = $result->fetch_assoc()) {
-                echo "URL <input value=\"https://retrotube.ml/viewvideo.php?id=" . $row["id"] . "\"><br>
-                Embed <input style=\"margin-right: 13px;\" value='<iframe style=\"border: 0px; overflow: hidden;\" src=\"https://retrotube.ml/player/embed.php?id=" . $_GET['id'] . "\" height=\"360\" width=\"480\"></iframe>'>";
+                echo "URL <input value=\"https://retrotube.ml/viewvideo.php?id=" . htmlspecialchars($row["id"], ENT_QUOTES, 'UTF-8') . "\"><br>
+                Embed <input style=\"margin-right: 13px;\" value='<iframe style=\"border: 0px; overflow: hidden;\" src=\"https://retrotube.ml/player/embed.php?id=" . htmlspecialchars($video_id, ENT_QUOTES, 'UTF-8') . "\" height=\"360\" width=\"480\"></iframe>'>";
                 echo "<br>";
-                echo "URL to send in discord <input value=\"https://retrotube.ml/videos/" . $row["filename"] . "\">";
+                echo "URL to send in discord <input value=\"https://retrotube.ml/videos/" . htmlspecialchars($row["filename"], ENT_QUOTES, 'UTF-8') . "\">";
             }
 
         ?>  
@@ -123,7 +106,7 @@ error_reporting(E_ALL);
     margin-top: 50px;
 ">';
             $stmt = $mysqli->prepare("SELECT * FROM videos WHERE id = ?");
-            $stmt->bind_param("s", $_GET['id']);
+            $stmt->bind_param("i", $video_id);  // Using "i" for integers
             $stmt->execute();
             $result = $stmt->get_result();
             if($result->num_rows === 0) exit('No rows');
@@ -158,10 +141,10 @@ error_reporting(E_ALL);
                 die("Please login to comment.");
             }
             else {
+                // Sanitize user input for comments
+                $comment = htmlspecialchars($_POST['bio'], ENT_QUOTES, 'UTF-8');
                 $stmt = $mysqli->prepare("INSERT INTO comments (tovideoid, author, comment, date) VALUES (?, ?, ?, now())");
-                $stmt->bind_param("sss", $_GET['id'], $_SESSION['profileuser3'], $comment);
-    
-                $comment = str_replace(PHP_EOL, "<br>", htmlspecialchars($_POST['bio']));
+                $stmt->bind_param("sss", $video_id, $_SESSION['profileuser3'], $comment);
     
                 $stmt->execute();
                 $stmt->close();
@@ -177,12 +160,12 @@ error_reporting(E_ALL);
     <hr>
     <?php
         $stmt = $mysqli->prepare("SELECT * FROM comments WHERE tovideoid = ?");
-        $stmt->bind_param("s", $_GET['id']);
+        $stmt->bind_param("i", $video_id);  // Using "i" for integers
         $stmt->execute();
         $result = $stmt->get_result();
         if($result->num_rows === 0) echo('No comments.');
         while($row = $result->fetch_assoc()) {
-            echo "<div class='commenttitle'>" . $row['author'] . " (" . $row['date'] . ")</div>" . $row['comment'] . "<br><br>";
+            echo "<div class='commenttitle'>" . htmlspecialchars($row['author'], ENT_QUOTES, 'UTF-8') . " (" . htmlspecialchars($row['date'], ENT_QUOTES, 'UTF-8') . ")</div>" . nl2br(htmlspecialchars($row['comment'], ENT_QUOTES, 'UTF-8')) . "<br><br>";
         }
         $stmt->close();
     ?>
@@ -190,8 +173,8 @@ error_reporting(E_ALL);
     <?php include("footer.php") ?>
 </div>
 
-
 </html>
     
 
 <?php $mysqli->close();?>
+

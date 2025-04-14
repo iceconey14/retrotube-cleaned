@@ -1,0 +1,57 @@
+/* Player Styles */
+.player {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.video-stream {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.playButton, .pauseButton {
+    width: 30px;
+    height: 30px;
+    background-color: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.timer {
+    color: white;
+}
+
+.volbar {
+    width: 100px;
+}
+
+.buffer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: url(./assets/buffer.png);
+    width: 0%;
+    height: 100%;
+}
+
+.fullscreenButton {
+    width: 30px;
+    height: 30px;
+    background-image: url(./assets/fullscreen.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}

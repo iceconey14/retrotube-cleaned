@@ -1,4 +1,7 @@
 <?php
+error_reporting(0);
+ini_set('display_errors', 0);
+
 $mysqli = new mysqli("sql host", "database user", "password", "database name");
 session_start();
 

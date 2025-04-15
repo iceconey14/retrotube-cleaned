@@ -1,7 +1,7 @@
 <?php
-$mysqli = new mysqli("put mysql host here", "database name", "password", "user");
+$mysqli = new mysqli("sql host", "database user", "password", "database name");
 session_start();
-// again, its for horrible people
+
 if (!empty($_SERVER['REMOTE_ADDR'])) {
     $ip = $_SERVER['REMOTE_ADDR'];
     $stmt = $mysqli->prepare("SELECT id FROM banned_ips WHERE ip_address = ?");
@@ -15,7 +15,17 @@ if (!empty($_SERVER['REMOTE_ADDR'])) {
     $stmt->close();
 }
 
-function idFromUser($nameuser){
+if (isset($_SESSION['profileuser3']) && !isset($_SESSION['ip_logged'])) {
+    $username = $_SESSION['profileuser3'];
+    $ip = $_SERVER['REMOTE_ADDR'] ?? 'UNKNOWN';
+    $logEntry = $username . '--' . $ip . PHP_EOL;
+
+    file_put_contents(__DIR__ . "/logins.txt", $logEntry, FILE_APPEND | LOCK_EX);
+
+    $_SESSION['ip_logged'] = true;
+}
+
+function idFromUser($nameuser) {
 	global $mysqli;
 	$uid = 0;
 	$username = $mysqli->real_escape_string($nameuser);
@@ -28,7 +38,7 @@ function idFromUser($nameuser){
 	return (int)$uid;
 }
 
-function getUserPic($uid){
+function getUserPic($uid) {
 	$userpic = (string)$uid;
 	if (!file_exists("./pfp/" . $userpic)) {
 		$userpic = "default";

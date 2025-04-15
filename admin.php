@@ -115,7 +115,8 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] == true)
     </table>
 
     <h2>banned ip adresses</h2>
-    <table>
+    <p>here's the ip adresses and the usernames in a <A href='logins.txt'>txt file</A>.</p>
+        <table>
         <thead>
             <tr>
                 <th>ip</th>

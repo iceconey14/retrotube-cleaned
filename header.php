@@ -59,8 +59,13 @@
 	    <a class="menu-element" href="./upload.php"><img src="buttonupload.png"></a>
 	</div>
 	<div class="header">
-	    <center><input type="text" placeholder=""> <button type="button">Search</button></center>
-	</div>
+    <center>
+        <form action="search.php" method="get">
+            <input type="text" name="query">
+            <button type="submit">Search</button>
+        </form>
+    </center>
+</div>
 </header>
 
 <div style="

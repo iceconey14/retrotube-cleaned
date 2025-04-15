@@ -67,7 +67,7 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] == true)
     }
   
     $stmt = $mysqli->prepare("SELECT videos.id, videos.videotitle, users.username FROM videos JOIN users ON videos.author = users.username ORDER BY videos.id DESC LIMIT ? OFFSET ?");
-    $limit = 10; // Number of videos per page
+    $limit = 10; 
     $offset = isset($_GET['page']) ? ($_GET['page'] - 1) * $limit : 0;
     $stmt->bind_param("ii", $limit, $offset);
     $stmt->execute();

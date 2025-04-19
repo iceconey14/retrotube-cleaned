@@ -14,7 +14,6 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Validate and sanitize the video ID to prevent injection attacks
 $video_id = isset($_GET['id']) ? filter_var($_GET['id'], FILTER_VALIDATE_INT) : null;
 
 if (!$video_id) {
@@ -27,7 +26,7 @@ if (!$video_id) {
     <?php
 
         $stmt = $mysqli->prepare("SELECT * FROM videos WHERE id = ?");
-        $stmt->bind_param("i", $video_id);  // Using "i" for integers
+        $stmt->bind_param("i", $video_id);  
         $stmt->execute();
         $result = $stmt->get_result();
         if($result->num_rows === 0) exit('No rows');
@@ -63,7 +62,7 @@ if (!$video_id) {
 <div class="card gray">
         <?php
             $stmt = $mysqli->prepare("SELECT * FROM videos WHERE id = ?");
-            $stmt->bind_param("i", $video_id);  // Using "i" for integers
+            $stmt->bind_param("i", $video_id);  
             $stmt->execute();
             $result = $stmt->get_result();
             if($result->num_rows === 0) exit('No rows');
@@ -82,7 +81,7 @@ if (!$video_id) {
         <div class="card message">     
         <?php
             $stmt = $mysqli->prepare("SELECT * FROM videos WHERE id = ?");
-            $stmt->bind_param("i", $video_id);  // Using "i" for integers
+            $stmt->bind_param("i", $video_id);
             $stmt->execute();
             $result = $stmt->get_result();
             if($result->num_rows === 0) exit('No rows');
@@ -106,7 +105,7 @@ if (!$video_id) {
     margin-top: 50px;
 ">';
             $stmt = $mysqli->prepare("SELECT * FROM videos WHERE id = ?");
-            $stmt->bind_param("i", $video_id);  // Using "i" for integers
+            $stmt->bind_param("i", $video_id); 
             $stmt->execute();
             $result = $stmt->get_result();
             if($result->num_rows === 0) exit('No rows');
@@ -141,7 +140,7 @@ if (!$video_id) {
                 die("Please login to comment.");
             }
             else {
-                // Sanitize user input for comments
+              
                 $comment = htmlspecialchars($_POST['bio'], ENT_QUOTES, 'UTF-8');
                 $stmt = $mysqli->prepare("INSERT INTO comments (tovideoid, author, comment, date) VALUES (?, ?, ?, now())");
                 $stmt->bind_param("sss", $video_id, $_SESSION['profileuser3'], $comment);
@@ -160,7 +159,7 @@ if (!$video_id) {
     <hr>
     <?php
         $stmt = $mysqli->prepare("SELECT * FROM comments WHERE tovideoid = ?");
-        $stmt->bind_param("i", $video_id);  // Using "i" for integers
+        $stmt->bind_param("i", $video_id);
         $stmt->execute();
         $result = $stmt->get_result();
         if($result->num_rows === 0) echo('No comments.');
